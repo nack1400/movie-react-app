@@ -1,20 +1,19 @@
-import Button from "./Button";
-import styles from "./App.module.css";
 import { useState, useEffect } from "react";
 
 function App() {
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState(true);
   const [coins, setCoins] = useState([]);
   const [money, setMoney] = useState();
-  const [select, setSelect] = useState("");
+  const [select, setSelect] = useState(0);
+
   const onChange = (event) => {
     setMoney(event.target.value);
-    console.log(money);
   };
   const onSelect = (event) => {
     setSelect(event.target.value);
-    console.log(select);
-  }
+    setSearch(false);
+  };
   useEffect(() => {
     fetch("https://api.coinpaprika.com/v1/tickers")
       .then((response) => response.json())
@@ -30,14 +29,16 @@ function App() {
         <strong>Loading....</strong>
       ) : (
         <div>
-          <input value={money} onChange={onChange} placeholder="투자할 달러 입력($ USD)" />
+          <input value={money} onChange={onChange} placeholder="투자할 달러 입력($ USD)" disabled={search}/>
+          <hr/>
           <select value={select} onChange={onSelect}>
-            {coins.map((coin) => (
-              <option value={coin.quotes.USD.price}>
+            {coins.map((coin, index) => (
+              <option value={coin.quotes.USD.price} key={index}>
                 {coin.name} ({coin.symbol}: ${coin.quotes.USD.price} USD
               </option>
             ))}
           </select>
+          <br/><br/>
           구매 가능한 코인의 수 : {Math.floor(money/select)}
         </div>
       )}
